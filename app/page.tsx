@@ -33,11 +33,11 @@ export default function Home() {
 			</p>
 			<div className='pt-16 gap-14 px-8 w-full flex flex-col justify-center items-center'>
 				<div
-					onDragOver={handleDragOver}
-					onDrop={handleDragEnd}
-					onDragEnd={handleDragEnd}
-					onClick={() => inputRef.current?.click()}
-					draggable
+					// onDragOver={handleDragOver}
+					// onDrop={handleDragEnd}
+					// onDragEnd={handleDragEnd}
+					// onClick={() => inputRef.current?.click()}
+					// draggable
 					className='flex flex-col justify-evenly items-center cursor-pointer max-w-4xl h-80 border-2 border-dashed border-gray-1 bg-white-1 rounded-2xl w-full'>
 					<PDFIcon />
 					<p className='text-secondary text-lg font-bold text-center'>
@@ -46,13 +46,13 @@ export default function Home() {
 						<span>(Supports only PDF format)</span>
 					</p>
 					<ThemeBtn>Upload PDF</ThemeBtn>
-					<input
+					{/* <input
 						onChange={handleFileChange}
 						ref={inputRef}
 						type='file'
 						accept='application/pdf'
 						hidden
-					/>
+					/> */}
 				</div>
 				<div
 					className={`transition-all pb-5 duration-500 flex flex-col gap-3 max-w-4xl w-full overflow-hidden ${
