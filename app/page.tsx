@@ -68,9 +68,9 @@ export default function Home() {
 					<Input />
 					<Input />
 					<div className='mt-10 flex gap-5 w-full justify-evenly flex-wrap'>
-						<ThemeBtn className='w-full md:w-fit'>Automate PDF tasks</ThemeBtn>
-						<ThemeBtn className='w-full md:w-fit'>Download PDF</ThemeBtn>
-						<ThemeBtn className='w-full md:w-fit'>Download .CSV</ThemeBtn>
+						<ThemeBtn className='!w-full md:w-fit'>Automate PDF tasks</ThemeBtn>
+						<ThemeBtn className='!w-full md:w-fit'>Download PDF</ThemeBtn>
+						<ThemeBtn className='!collapsew-full md:w-fit'>Download .CSV</ThemeBtn>
 					</div>
 				</div>
 			</div>
