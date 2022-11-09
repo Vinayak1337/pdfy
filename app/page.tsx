@@ -1,27 +1,96 @@
 'use client';
 // import Image from 'next/image';
-// import { PDFDocument } from 'pdf-lib';
+import { PDFDocument } from 'pdf-lib';
 import PDFIcon from 'public/images/pdf.svg';
 import { NextPage } from 'next';
-import { ButtonHTMLAttributes, DetailedHTMLProps, ReactNode } from 'react';
-import { DragEvent, useRef, useState } from 'react';
+import {
+	ButtonHTMLAttributes,
+	DetailedHTMLProps,
+	ReactNode,
+	DragEvent,
+	useRef,
+	useState,
+	useEffect,
+	useCallback
+} from 'react';
 
 export default function Home() {
-	const [file, setFile] = useState<File | null | boolean>(false),
-		inputRef = useRef<HTMLInputElement>(null);
+	const inputRef = useRef<HTMLInputElement>(null),
+		[pdfDoc, setPdfDoc] = useState<PDFDocument | null>(null),
+		[pdfUri, setPdfUri] = useState<string>(''),
+		[meta, setMeta] = useState({
+			Author: '',
+			Creator: '',
+			Keywords: '',
+			Producer: '',
+			Subject: '',
+			Title: '',
+			'Created On': '',
+			'File Name': '',
+			'File Size': 0,
+			Pages: 0,
+			Encrypted: false,
+			'Modified On': ''
+		});
 
-	const handleDragEnd = (e: DragEvent<HTMLDivElement>) => {
+	const handleFile = async (file: File) => {
+			const arrayBuffer = await file.arrayBuffer();
+			const pdfDoc = await PDFDocument.load(arrayBuffer);
+			setPdfDoc(pdfDoc);
+			const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
+			setPdfUri(pdfDataUri);
+			// setMeta({
+			// 	Author: pdfDoc.getAuthor() || '',
+			// 	Creator: pdfDoc.getCreator() || '',
+			// 	Keywords: pdfDoc.getKeywords() || '',
+			// 	'File Name': file.name,
+			// 	'File Size': file.size,
+			// 	Pages: pdfDoc.getPageCount(),
+			// 	Encrypted: pdfDoc.isEncrypted,
+			// 	'Created On': pdfDoc.getCreationDate()?.toLocaleString() || '',
+			// 	'Modified On': pdfDoc.getModificationDate()?.toLocaleString() || ''
+			// });
+		},
+		handleDragEnd = (e: DragEvent<HTMLDivElement>) => {
 			e.preventDefault();
 			const file = e.dataTransfer.files[0];
 			if (file?.type !== 'application/pdf') return;
-			setFile(file);
+			handleFile(file);
 		},
 		handleDragOver = (e: DragEvent<HTMLDivElement>) => e.preventDefault(),
-		handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 			const files = e.target.files;
 			if (!files || !files.length) return;
-			setFile(files[0]);
-		};
+			handleFile(files[0]);
+		},
+		loadTempPdf = useCallback(async () => {
+			const res = await fetch('/pdf/PDF.pdf');
+			const pdfDoc = await PDFDocument.load(await res.arrayBuffer());
+			setPdfDoc(pdfDoc);
+			const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
+			setPdfUri(pdfDataUri);
+			const creator = pdfDoc.getCreator() || '';
+			const producer = pdfDoc.getProducer() || '';
+
+			setMeta({
+				Author: pdfDoc.getAuthor() || '-',
+				Creator: creator.includes('lib') ? '-' : creator,
+				Keywords: pdfDoc.getKeywords() || '-',
+				Producer: producer.includes('lib') ? '-' : producer,
+				Subject: pdfDoc.getSubject() || '-',
+				Title: pdfDoc.getTitle() || '-',
+				'File Name': '-',
+				'File Size': 0,
+				Pages: pdfDoc.getPageCount(),
+				Encrypted: pdfDoc.isEncrypted,
+				'Created On': pdfDoc.getCreationDate()?.toLocaleString() || '-',
+				'Modified On': pdfDoc.getModificationDate()?.toLocaleString() || '-'
+			});
+		}, []);
+
+	useEffect(() => {
+		loadTempPdf();
+	}, [loadTempPdf]);
 
 	return (
 		<div className='flex flex-col items-center pb-10'>
@@ -55,28 +124,53 @@ export default function Home() {
 					/> */}
 				</div>
 				<div
-					className={`transition-all pb-5 duration-500 flex flex-col gap-3 max-w-4xl w-full overflow-hidden ${
-						file ? 'h-[80rem]' : 'h-fit'
+					className={`transition-all pb-5 duration-500 flex flex-col lg:flex-row gap-3 w-full overflow-hidden ${
+						pdfDoc ? 'h-fit' : 'h-fit'
 					}`}>
-					<Input />
-					<Input />
-					<Input />
-					<Input />
-					<Input />
-					<Input />
-					<Input />
-					<Input />
-					<Input />
-					<div className='mt-10 flex gap-5 w-full justify-evenly flex-wrap'>
-						<ThemeBtn className='!w-full md:w-fit'>Automate PDF tasks</ThemeBtn>
-						<ThemeBtn className='!w-full md:w-fit'>Download PDF</ThemeBtn>
-						<ThemeBtn className='!w-full md:w-fit'>Download .CSV</ThemeBtn>
+					{pdfUri && (
+						<iframe className='w-full lg:w-1/2 h-[80rem] ' src={pdfUri} />
+					)}
+					<div className='w-full lg:w-1/2 h-fit'>
+						<table className='border w-full border-primary text-primary text-lg font-medium'>
+							<tbody>
+								{Object.entries(meta).map(([key, value], i) => (
+									<tr
+										key={key + value + i}
+										className='border-b border-b-primary'>
+										<td className='p-2 w-1/2 '>{key}</td>
+										<td className='border-l border-l-primary p-2 w-1/2'>
+											<input
+												disabled={disabledKeys.includes(key)}
+												className='w-full border-none outline-none text-black bg-white bg-opacity-80 w-ful text-lg font-medium disabled:opacity-70'
+												type='text'
+												defaultValue={value.toString()}
+											/>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+						<div className='mt-10 flex gap-5 w-full justify-evenly flex-wrap'>
+							<ThemeBtn className='!w-full md:!w-fit'>
+								Automate PDF tasks
+							</ThemeBtn>
+							<ThemeBtn className='!w-full md:!w-fit'>Download PDF</ThemeBtn>
+							<ThemeBtn className='!w-full md:!w-fit'>Download .CSV</ThemeBtn>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	);
 }
+
+const disabledKeys = [
+	'Pages',
+	'Encrypted',
+	'File Size',
+	'Modified On',
+	'Created On'
+];
 
 const Input = () => (
 	<div className='w-full bg-gray-300 rounded-lg lg:rounded-2xl py-3 px-5 flex flex-col gap-3'>
@@ -85,7 +179,7 @@ const Input = () => (
 		</label>
 		<input
 			value='Title'
-			className='pl-3 h-10 rounded-md lg:rounded-lg bg-white outline-none focus:shadow-primary'
+			className='pl-3 h-10 rounded-md lg:rounded-lg text-tertiary caret-tertiary bg-white outline-none focus:shadow-primary'
 			type='text'
 		/>
 	</div>
