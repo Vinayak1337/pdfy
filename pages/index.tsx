@@ -21,14 +21,16 @@ export default function Home() {
 		[hasMetaChanged, setHasMetaChanged] = useState(false);
 
 	const handleFile = async (file: File) => {
-			const arrayBuffer = await file.arrayBuffer();
-			const pdfDoc = await PDFDocument.load(arrayBuffer);
-			setPdfDoc(pdfDoc);
+			const arrayBuffer = await file.arrayBuffer(),
+				pdfDoc = await PDFDocument.load(arrayBuffer);
+
+			const creator = pdfDoc.getCreator() || '',
+				producer = pdfDoc.getProducer() || '',
+				title = pdfDoc.getTitle() || '',
+				subject = pdfDoc.getSubject() || '';
+
 			setPdfUri(URL.createObjectURL(file));
-			const creator = pdfDoc.getCreator() || '';
-			const producer = pdfDoc.getProducer() || '';
-			const title = pdfDoc.getTitle() || '';
-			const subject = pdfDoc.getSubject() || '';
+			setPdfDoc(pdfDoc);
 
 			const meta = {
 				Author: pdfDoc.getAuthor() || '',
@@ -77,13 +79,13 @@ export default function Home() {
 			})),
 		downloadCsv = () => {
 			const csv = Object.entries(tempMeta)
-				.map(
-					([key, value]) => `${JSON.stringify(key)},${JSON.stringify(value)}`
-				)
-				.join('\n');
-			const blob = new Blob([csv], { type: 'text/csv' });
-			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a');
+					.map(
+						([key, value]) => `${JSON.stringify(key)},${JSON.stringify(value)}`
+					)
+					.join('\n'),
+				blob = new Blob([csv], { type: 'text/csv' }),
+				url = URL.createObjectURL(blob),
+				a = document.createElement('a');
 			a.href = url;
 			a.download = tempMeta['File Name'] + '.csv';
 			a.click();
@@ -101,10 +103,10 @@ export default function Home() {
 		},
 		downloadPdf = async () => {
 			if (!pdfDoc) return;
-			const pdfBytes = await pdfDoc.save();
-			const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a');
+			const pdfBytes = await pdfDoc.save(),
+				blob = new Blob([pdfBytes], { type: 'application/pdf' }),
+				url = URL.createObjectURL(blob),
+				a = document.createElement('a');
 			a.href = url;
 			a.download = tempMeta['File Name'] + '.pdf';
 			a.click();
