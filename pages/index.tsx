@@ -8,7 +8,8 @@ import {
 	DragEvent,
 	useRef,
 	useState,
-	useEffect
+	useEffect,
+	ChangeEvent
 } from 'react';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
 
@@ -64,7 +65,7 @@ export default function Home() {
 			handleFile(file);
 		},
 		handleDragOver = (e: DragEvent<HTMLDivElement>) => e.preventDefault(),
-		handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
 			const files = e.target.files;
 			if (!files || !files.length || files[0]?.type !== 'application/pdf')
 				return;
@@ -72,7 +73,7 @@ export default function Home() {
 		},
 		handleMetaChange = ({
 			target: { value, name }
-		}: React.ChangeEvent<HTMLInputElement>) =>
+		}: ChangeEvent<HTMLInputElement>) =>
 			setTempMeta(prevState => ({
 				...prevState,
 				[name]: value
@@ -237,7 +238,7 @@ const initialMeta = {
 const Input: NextPage<{
 	label: string;
 	value: string | number | boolean;
-	handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }> = ({ label, value, handleChange }) => (
 	<div className='flex gap-5'>
 		<label className='w-40'>{label}</label>
