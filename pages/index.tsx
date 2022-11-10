@@ -37,7 +37,7 @@ export default function Home() {
 				Producer: fallbackTexts.includes(producer) ? '' : producer,
 				Subject: fallbackTexts.includes(subject) ? '' : subject,
 				Title: fallbackTexts.includes(title) ? '' : title,
-				'File Name': file.name,
+				'File Name': file.name.replace('.pdf', ''),
 				'File Size': file.size,
 				Pages: pdfDoc.getPageCount(),
 				Encrypted: pdfDoc.isEncrypted,
@@ -64,7 +64,8 @@ export default function Home() {
 		handleDragOver = (e: DragEvent<HTMLDivElement>) => e.preventDefault(),
 		handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 			const files = e.target.files;
-			if (!files || !files.length) return;
+			if (!files || !files.length || files[0]?.type !== 'application/pdf')
+				return;
 			handleFile(files[0]);
 		},
 		handleMetaChange = ({
@@ -84,7 +85,7 @@ export default function Home() {
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = url;
-			a.download = tempMeta['File Name'].replace('.pdf', '.csv');
+			a.download = tempMeta['File Name'] + '.csv';
 			a.click();
 		},
 		handleSave = () => {
@@ -105,7 +106,7 @@ export default function Home() {
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = url;
-			a.download = tempMeta['File Name'];
+			a.download = tempMeta['File Name'] + '.pdf';
 			a.click();
 		},
 		redirectToNanonets = () =>
