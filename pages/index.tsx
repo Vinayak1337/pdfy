@@ -164,13 +164,11 @@ export default function Home() {
 					/>
 				</div>
 				{pdfDoc && (
-					<div className='transition-all justify-center max-w-7xl pb-5 duration-500 flex flex-col lg:flex-row gap-3 w-full h-fit'>
+					<div className='justify-center max-w-7xl pb-5 flex flex-col lg:flex-row gap-3 w-full h-fit'>
 						<div className='border rounded-md w-full lg:w-1/2 h-[40rem] text-black'>
-							{pdfUri && (
-								<Worker workerUrl='https://unpkg.com/pdfjs-dist@2.15.349/build/pdf.worker.min.js'>
-									<Viewer fileUrl={pdfUri} />
-								</Worker>
-							)}
+							<Worker workerUrl='https://unpkg.com/pdfjs-dist@2.15.349/build/pdf.worker.min.js'>
+								<Viewer fileUrl={pdfUri} />
+							</Worker>
 						</div>
 						<div className='w-full lg:w-1/2 h-fit text-primary text-lg font-medium flex flex-col gap-4'>
 							{Object.entries(tempMeta).map(([label, value], i) => (
@@ -239,10 +237,9 @@ const Input: NextPage<{
 	value: string | number | boolean;
 	handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }> = ({ label, value, handleChange }) => (
-	<div key={label} className='flex gap-5'>
+	<div className='flex gap-5'>
 		<label className='w-40'>{label}</label>
 		<input
-			key={label}
 			onChange={handleChange}
 			placeholder={
 				label === 'Keywords'
@@ -250,6 +247,7 @@ const Input: NextPage<{
 					: 'Enter ' + label
 			}
 			name={label}
+			id={label}
 			disabled={disabledKeys.includes(label)}
 			className='pl-2 caret-primary w-full border-primary border-[0.1px] rounded-md outline-none text-black bg-white text-lg font-medium disabled:opacity-70 disabled:cursor-not-allowed'
 			type='text'
