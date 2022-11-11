@@ -113,7 +113,9 @@ export default function Home() {
 			a.click();
 		},
 		redirectToNanonets = () =>
-			window.open('https://app.nanonets.com/#/signup/');
+			window.open(
+				'https://app.nanonets.com/#/signup/?utm_source=pdfmetadatatool'
+			);
 
 	useEffect(() => {
 		for (const [key, value] of Object.entries(meta)) {
@@ -144,28 +146,30 @@ export default function Home() {
 				Extract PDF metadata of the uploaded files
 			</p>
 			<div className='pt-16 gap-14 px-8 w-full flex flex-col justify-center items-center'>
-				<div
-					onDragOver={handleDragOver}
-					onDrop={handleDragEnd}
-					onDragEnd={handleDragEnd}
-					onClick={() => inputRef.current?.click()}
-					draggable
-					className='flex flex-col justify-evenly items-center cursor-pointer max-w-4xl h-80 border-2 border-dashed border-gray-1 bg-white-1 rounded-2xl w-full'>
-					<PDFIcon />
-					<p className='text-secondary text-lg font-bold text-center'>
-						<span>Drag and drop or click to upload</span>
-						<br />
-						<span>(Supports only PDF format)</span>
-					</p>
-					<ThemeBtn>Upload PDF</ThemeBtn>
-					<input
-						onChange={handleFileChange}
-						ref={inputRef}
-						type='file'
-						accept='application/pdf'
-						hidden
-					/>
-				</div>
+				{!pdfDoc && (
+					<div
+						onDragOver={handleDragOver}
+						onDrop={handleDragEnd}
+						onDragEnd={handleDragEnd}
+						onClick={() => inputRef.current?.click()}
+						draggable
+						className='flex flex-col justify-evenly items-center cursor-pointer max-w-4xl h-80 border-2 border-dashed border-gray-1 bg-white-1 rounded-2xl w-full'>
+						<PDFIcon />
+						<p className='text-secondary text-lg font-bold text-center'>
+							<span>Drag and drop or click to upload</span>
+							<br />
+							<span>(Supports only PDF format)</span>
+						</p>
+						<ThemeBtn>Upload PDF</ThemeBtn>
+						<input
+							onChange={handleFileChange}
+							ref={inputRef}
+							type='file'
+							accept='application/pdf'
+							hidden
+						/>
+					</div>
+				)}
 				{pdfDoc && (
 					<div className='justify-center max-w-7xl pb-5 flex flex-col lg:flex-row gap-3 w-full h-fit'>
 						<div className='border rounded-md w-full lg:w-1/2 h-[40rem] text-black'>
