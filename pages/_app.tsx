@@ -27,8 +27,10 @@ export default function App({ Component, pageProps }: AppProps) {
 				</nav>
 				<Component {...pageProps} />
 			</div>
-			<footer className='w-full h-12 bg-secondary pl-5 pt-3 text-white'>
-				Copyright
+			<footer className='w-full flex flex-col h-12 bg-secondary pl-5 pt-3 text-white font-medium'>
+				<span className='w-full max-w-7xl self-center'>
+					Copyright © 2021 Nano Net Technologies Inc.
+				</span>
 			</footer>
 		</div>
 	);
