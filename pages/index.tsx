@@ -12,6 +12,7 @@ import {
 	ChangeEvent
 } from 'react';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
+import Head from 'next/head';
 
 export default function Home() {
 	const inputRef = useRef<HTMLInputElement>(null),
@@ -138,78 +139,89 @@ export default function Home() {
 	}, [meta, tempMeta]);
 
 	return (
-		<div className='flex flex-col items-center pb-10'>
-			<h1 className='text-secondary mt-8 text-3xl font-bold text-center'>
-				PDF metadata
-			</h1>
-			<p className='mt-4 max-w-xs lg:max-w-none text-center text-base text-tertiary'>
-				Extract PDF metadata of the uploaded files
-			</p>
-			<div className='pt-16 gap-14 px-8 w-full flex flex-col justify-center items-center'>
-				{!pdfDoc && (
-					<div
-						onDragOver={handleDragOver}
-						onDrop={handleDragEnd}
-						onDragEnd={handleDragEnd}
-						onClick={() => inputRef.current?.click()}
-						draggable
-						className='flex flex-col justify-evenly items-center cursor-pointer max-w-4xl h-80 border-2 border-dashed border-gray-1 bg-white-1 rounded-2xl w-full'>
-						<PDFIcon />
-						<p className='text-secondary text-lg font-bold text-center'>
-							<span>Drag and drop or click to upload</span>
-							<br />
-							<span>(Supports only PDF format)</span>
-						</p>
-						<ThemeBtn>Upload PDF</ThemeBtn>
-						<input
-							onChange={handleFileChange}
-							ref={inputRef}
-							type='file'
-							accept='application/pdf'
-							hidden
-						/>
-					</div>
-				)}
-				{pdfDoc && (
-					<div className='justify-center max-w-7xl pb-5 flex flex-col lg:flex-row gap-3 w-full h-fit'>
-						<div className='border rounded-md w-full lg:w-1/2 h-[40rem] text-black'>
-							<Worker workerUrl='https://unpkg.com/pdfjs-dist@2.15.349/build/pdf.worker.min.js'>
-								<Viewer fileUrl={pdfUri} />
-							</Worker>
-						</div>
-						<div className='w-full lg:w-1/2 h-fit text-primary text-lg font-medium flex flex-col gap-4'>
-							{Object.entries(tempMeta).map(([label, value], i) => (
-								<Input
-									handleChange={handleMetaChange}
-									key={label + i}
-									label={label}
-									value={value}
-								/>
-							))}
+		<>
+			<Head>
+				<title>PDF Metadata Extractor</title>
+				<meta
+					name='description'
+					content='PDF Metadata Extractor'
+				/>
+				<link rel='icon' href='/favicon.ico' />
+			</Head>
 
-							<div className='mt-10 flex gap-5 w-full justify-evenly flex-wrap'>
-								<ThemeBtn
-									onClick={redirectToNanonets}
-									className='!w-full md:!w-fit'>
-									Automate PDF tasks
-								</ThemeBtn>
-								<ThemeBtn
-									onClick={hasMetaChanged ? handleSave : downloadPdf}
-									className='!w-full md:!w-fit min-w-[172px]'>
-									{hasMetaChanged ? 'Save' : 'Download PDF'}
-								</ThemeBtn>
-								<ThemeBtn
-									onClick={downloadCsv}
-									disabled={hasMetaChanged}
-									className='!w-full md:!w-fit'>
-									Download .CSV
-								</ThemeBtn>
+			<div className='flex flex-col items-center pb-10'>
+				<h1 className='text-secondary mt-8 text-3xl font-bold text-center'>
+					PDF metadata
+				</h1>
+				<p className='mt-4 max-w-xs lg:max-w-none text-center text-base text-tertiary'>
+					Extract PDF metadata of the uploaded files
+				</p>
+				<div className='pt-16 gap-14 px-8 w-full flex flex-col justify-center items-center'>
+					{!pdfDoc && (
+						<div
+							onDragOver={handleDragOver}
+							onDrop={handleDragEnd}
+							onDragEnd={handleDragEnd}
+							onClick={() => inputRef.current?.click()}
+							draggable
+							className='flex flex-col justify-evenly items-center cursor-pointer max-w-4xl h-80 border-2 border-dashed border-gray-1 bg-white-1 rounded-2xl w-full'>
+							<PDFIcon />
+							<p className='text-secondary text-lg font-bold text-center'>
+								<span>Drag and drop or click to upload</span>
+								<br />
+								<span>(Supports only PDF format)</span>
+							</p>
+							<ThemeBtn>Upload PDF</ThemeBtn>
+							<input
+								onChange={handleFileChange}
+								ref={inputRef}
+								type='file'
+								accept='application/pdf'
+								hidden
+							/>
+						</div>
+					)}
+					{pdfDoc && (
+						<div className='justify-center max-w-7xl pb-5 flex flex-col lg:flex-row gap-3 w-full h-fit'>
+							<div className='border rounded-md w-full lg:w-1/2 h-[40rem] text-black'>
+								<Worker workerUrl='https://unpkg.com/pdfjs-dist@2.15.349/build/pdf.worker.min.js'>
+									<Viewer fileUrl={pdfUri} />
+								</Worker>
+							</div>
+							<div className='w-full lg:w-1/2 h-fit text-primary text-lg font-medium flex flex-col gap-4'>
+								{Object.entries(tempMeta).map(([label, value], i) => (
+									<Input
+										handleChange={handleMetaChange}
+										key={label + i}
+										label={label}
+										value={value}
+									/>
+								))}
+
+								<div className='mt-10 flex gap-5 w-full justify-evenly flex-wrap'>
+									<ThemeBtn
+										onClick={redirectToNanonets}
+										className='!w-full md:!w-fit'>
+										Automate PDF tasks
+									</ThemeBtn>
+									<ThemeBtn
+										onClick={hasMetaChanged ? handleSave : downloadPdf}
+										className='!w-full md:!w-fit min-w-[172px]'>
+										{hasMetaChanged ? 'Save' : 'Download PDF'}
+									</ThemeBtn>
+									<ThemeBtn
+										onClick={downloadCsv}
+										disabled={hasMetaChanged}
+										className='!w-full md:!w-fit'>
+										Download .CSV
+									</ThemeBtn>
+								</div>
 							</div>
 						</div>
-					</div>
-				)}
+					)}
+				</div>
 			</div>
-		</div>
+		</>
 	);
 }
 
